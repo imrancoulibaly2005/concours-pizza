@@ -2,7 +2,7 @@ import { neon } from "@neondatabase/serverless";
 import { NextRequest, NextResponse } from "next/server";
 
 const MAX_WINNERS = 9;
-const GUARANTEED_WINNERS = ["jonathan", "enzo"];
+const GUARANTEED_WINNERS = ["jonathan", "enzo", "mehdi"];
 
 function isGuaranteed(name: string) {
   return GUARANTEED_WINNERS.includes(name.trim().toLowerCase());
