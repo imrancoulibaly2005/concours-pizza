@@ -133,8 +133,12 @@ export default function ConcoursPage() {
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({ name: name.trim() }),
       });
-      if (!res.ok) throw new Error();
       const data = await res.json();
+      if (res.status === 409) {
+        setError(data.error ?? "Tu as déjà participé au concours !");
+        return;
+      }
+      if (!res.ok) throw new Error();
 
       setWinnersLeft(9 - data.winnersCount);
       setParticipantId(data.id);
