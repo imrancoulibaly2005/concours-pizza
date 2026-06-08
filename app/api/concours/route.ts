@@ -21,11 +21,17 @@ async function ensureTable() {
       id SERIAL PRIMARY KEY,
       name TEXT NOT NULL,
       won BOOLEAN NOT NULL DEFAULT false,
+      pizza_choice TEXT,
       created_at TIMESTAMPTZ DEFAULT NOW()
     )
   `;
+  // Migration si la table existait déjà sans la colonne pizza_choice
+  await sql`
+    ALTER TABLE pizza_concours ADD COLUMN IF NOT EXISTS pizza_choice TEXT
+  `;
 }
 
+// Jouer : soumettre son prénom
 export async function POST(req: NextRequest) {
   try {
     const { name } = await req.json();
@@ -44,9 +50,10 @@ export async function POST(req: NextRequest) {
     const guaranteed = isGuaranteed(name);
     const won = guaranteed || (currentWinners < MAX_WINNERS && Math.random() < 0.35);
 
-    await sql`
+    const rows = await sql`
       INSERT INTO pizza_concours (name, won)
       VALUES (${name.trim()}, ${won})
+      RETURNING id
     `;
 
     const [{ count: totalCount }] = await sql`
@@ -55,6 +62,7 @@ export async function POST(req: NextRequest) {
 
     return NextResponse.json({
       won,
+      id: rows[0].id,
       winnersCount: won ? currentWinners + 1 : currentWinners,
       totalParticipants: parseInt(String(totalCount)),
     });
@@ -64,6 +72,31 @@ export async function POST(req: NextRequest) {
   }
 }
 
+// Choisir sa pizza après avoir gagné
+export async function PATCH(req: NextRequest) {
+  try {
+    const { id, pizzaChoice } = await req.json();
+    if (!id || !pizzaChoice?.trim()) {
+      return NextResponse.json({ error: "Données manquantes" }, { status: 400 });
+    }
+
+    await ensureTable();
+    const sql = getDb();
+
+    await sql`
+      UPDATE pizza_concours
+      SET pizza_choice = ${pizzaChoice.trim()}
+      WHERE id = ${parseInt(id)} AND won = true
+    `;
+
+    return NextResponse.json({ ok: true });
+  } catch (err) {
+    console.error(err);
+    return NextResponse.json({ error: "Erreur serveur" }, { status: 500 });
+  }
+}
+
+// Admin : voir tous les participants
 export async function GET(req: NextRequest) {
   const adminKey = req.nextUrl.searchParams.get("key");
   if (adminKey !== process.env.ADMIN_KEY) {
@@ -80,6 +113,7 @@ export async function GET(req: NextRequest) {
   }
 }
 
+// Admin : remettre à zéro
 export async function DELETE(req: NextRequest) {
   try {
     const { adminKey } = await req.json();
