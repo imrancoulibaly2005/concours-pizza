@@ -210,7 +210,7 @@ export default function ConcoursPage() {
       {/* En-tête */}
       <div className="relative z-10 text-center space-y-0.5">
         <p className="text-xs uppercase tracking-[0.35em] font-bold" style={{ color: "#ff6b35" }}>
-          Les Sentimentales
+          Amour de Pizza
         </p>
         <h1 className="text-3xl font-black text-white">🍕 Jeu Concours</h1>
         <p className="text-sm" style={{ color: "rgba(255,255,255,0.4)" }}>9 pizzas offertes à gagner !</p>
@@ -230,8 +230,7 @@ export default function ConcoursPage() {
               style={{ background: "rgba(255,107,53,0.1)", border: "1px solid rgba(255,107,53,0.2)",
                 color: "rgba(255,255,255,0.7)" }}>
               Aligne <span style={{ color: "#ffd700", fontWeight: "bold" }}>3 🍕</span> pour gagner
-              une pizza taille <strong style={{ color: "#ff6b35" }}>M</strong> au choix parmi
-              Les Sentimentales 🎰
+              une pizza au choix <strong style={{ color: "#ff6b35" }}>chez Amour de Pizza</strong> 🎰
             </div>
             <div className="space-y-1.5">
               <label className="block text-xs font-bold uppercase tracking-wider"
@@ -325,7 +324,7 @@ export default function ConcoursPage() {
               <div className="text-3xl mb-1">🍕</div>
               <h2 className="font-black text-lg text-white">Choisis ta pizza !</h2>
               <p className="text-xs mt-0.5" style={{ color: "rgba(255,255,255,0.45)" }}>
-                Taille M offerte — Les Sentimentales
+                Au choix chez Amour de Pizza
               </p>
             </div>
 
@@ -385,7 +384,7 @@ export default function ConcoursPage() {
               style={{ background: "rgba(255,215,0,0.1)", border: "1px solid rgba(255,215,0,0.35)" }}>
               <p className="text-xs uppercase tracking-widest font-bold" style={{ color: "#ffd700" }}>Ta pizza</p>
               <p className="font-black text-white text-xl">{selectedPizza} 🍕</p>
-              <p className="text-xs" style={{ color: "rgba(255,255,255,0.5)" }}>Taille M — Les Sentimentales</p>
+              <p className="text-xs" style={{ color: "rgba(255,255,255,0.5)" }}>Chez Amour de Pizza</p>
               <div className="mt-2 pt-2" style={{ borderTop: "1px solid rgba(255,215,0,0.2)" }}>
                 <p className="text-xs" style={{ color: "rgba(255,255,255,0.4)" }}>
                   Présente ce message à la soirée pour récupérer ta pizza 🎉
