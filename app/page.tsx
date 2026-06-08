@@ -5,27 +5,54 @@ import { useState, useEffect, useRef } from "react";
 const REEL_SYMBOLS = ["🍕", "🧀", "🍅", "🫒", "🧅", "🌶️", "🥓"];
 const WIN_SYMBOL = "🍕";
 
-const PIZZAS_SENTIMENTALES = [
-  { name: "Italia",        ingredients: "Sauce tomate, mozzarella, jambon, bacon, basilic, tomates, taleggio, filet de crème" },
-  { name: "Bassin",        ingredients: "Crème fraîche légère, mozzarella, poulet tikka, champignons, Boursin, oignons" },
-  { name: "Buffalo Bill",  ingredients: "Sauce barbecue, mozzarella, pepperoni, jambon, olives, poivrons" },
-  { name: "Chicken Chic",  ingredients: "Crème fraîche légère, mozzarella, merguez, poulet pané, tomates, œuf, emmental, sauce barbecue" },
-  { name: "Délice Amour",  ingredients: "Sauce tomate, mozzarella, double chorizo, double lardons, chèvre, olives noires" },
-  { name: "Ibère Fort",    ingredients: "Sauce tomate, mozzarella, pommes de terre, chorizo, parmesan, gorgonzola" },
-  { name: "Tahitienne",    ingredients: "Sauce tomate, mozzarella, ananas, poulet tikka" },
-  { name: "Océane",        ingredients: "Sauce tomate, mozzarella, thon, oignons rouges, olives noires, œuf" },
-  { name: "Mexico",        ingredients: "Sauce tomate, mozzarella, double bœuf épicé, merguez, poivrons, sauce épicée" },
-  { name: "Pack M",        ingredients: "Crème fraîche, sauce barbecue, mozzarella, double jambon, double poulet crousty, emmental" },
-  { name: "Suprême",       ingredients: "Sauce tomate, mozzarella, poulet tikka, cheddar, merguez, oignons rouges" },
-  { name: "Tartiflette",   ingredients: "Crème fraîche légère, mozzarella, reblochon, lardons, pommes de terre, oignons rouges" },
-  { name: "5 Fromages",    ingredients: "Sauce tomate, mozzarella, chèvre, parmesan, camembert, reblochon" },
-  { name: "Pizza Burger",  ingredients: "Crème fraîche, emmental, cheddar, bœuf haché, potatoes, bacon, oignons rouges, œuf" },
-  { name: "Méli Amour",    ingredients: "Crème fraîche, mozzarella, poulet tikka, miel, oignons rouges, chèvre" },
-  { name: "Calzone",       ingredients: "Sauce tomate, double mozzarella, emmental, jambon — taille M et L uniquement" },
-  { name: "Printanière",   ingredients: "Sauce tomate, mozzarella, tomates fraîches, lardons, chèvre, crème" },
-  { name: "Kebab",         ingredients: "Sauce tomate, mozzarella, viande kebab volaille, tomates fraîches, oignons rouges, sauce blanche" },
-  { name: "Bolognaise",    ingredients: "Sauce bolognaise, mozzarella, bœuf épicé, poivron" },
-  { name: "Raclette",      ingredients: "Crème fraîche légère, mozzarella, pommes de terre, raclette, chorizo" },
+const TOUTES_LES_PIZZAS = [
+  // ── Les Sentimentales ──
+  { category: "Les Sentimentales", name: "Italia",       ingredients: "Sauce tomate, mozzarella, jambon, bacon, basilic, tomates, taleggio, filet de crème" },
+  { category: "Les Sentimentales", name: "Bassin",       ingredients: "Crème fraîche légère, mozzarella, poulet tikka, champignons, Boursin, oignons" },
+  { category: "Les Sentimentales", name: "Buffalo Bill", ingredients: "Sauce barbecue, mozzarella, pepperoni, jambon, olives, poivrons" },
+  { category: "Les Sentimentales", name: "Chicken Chic", ingredients: "Crème fraîche légère, mozzarella, merguez, poulet pané, tomates, œuf, emmental, sauce barbecue" },
+  { category: "Les Sentimentales", name: "Délice Amour", ingredients: "Sauce tomate, mozzarella, double chorizo, double lardons, chèvre, olives noires" },
+  { category: "Les Sentimentales", name: "Ibère Fort",   ingredients: "Sauce tomate, mozzarella, pommes de terre, chorizo, parmesan, gorgonzola" },
+  { category: "Les Sentimentales", name: "Tahitienne",   ingredients: "Sauce tomate, mozzarella, ananas, poulet tikka" },
+  { category: "Les Sentimentales", name: "Océane",       ingredients: "Sauce tomate, mozzarella, thon, oignons rouges, olives noires, œuf" },
+  { category: "Les Sentimentales", name: "Mexico",       ingredients: "Sauce tomate, mozzarella, double bœuf épicé, merguez, poivrons, sauce épicée" },
+  { category: "Les Sentimentales", name: "Pack M",       ingredients: "Crème fraîche, sauce barbecue, mozzarella, double jambon, double poulet crousty, emmental" },
+  { category: "Les Sentimentales", name: "Suprême",      ingredients: "Sauce tomate, mozzarella, poulet tikka, cheddar, merguez, oignons rouges" },
+  { category: "Les Sentimentales", name: "Tartiflette",  ingredients: "Crème fraîche légère, mozzarella, reblochon, lardons, pommes de terre, oignons rouges" },
+  { category: "Les Sentimentales", name: "5 Fromages",   ingredients: "Sauce tomate, mozzarella, chèvre, parmesan, camembert, reblochon" },
+  { category: "Les Sentimentales", name: "Pizza Burger", ingredients: "Crème fraîche, emmental, cheddar, bœuf haché, potatoes, bacon, oignons rouges, œuf" },
+  { category: "Les Sentimentales", name: "Méli Amour",   ingredients: "Crème fraîche, mozzarella, poulet tikka, miel, oignons rouges, chèvre" },
+  { category: "Les Sentimentales", name: "Calzone",      ingredients: "Sauce tomate, double mozzarella, emmental, jambon — taille M et L uniquement" },
+  { category: "Les Sentimentales", name: "Printanière",  ingredients: "Sauce tomate, mozzarella, tomates fraîches, lardons, chèvre, crème" },
+  { category: "Les Sentimentales", name: "Kebab",        ingredients: "Sauce tomate, mozzarella, viande kebab volaille, tomates fraîches, oignons rouges, sauce blanche" },
+  { category: "Les Sentimentales", name: "Bolognaise",   ingredients: "Sauce bolognaise, mozzarella, bœuf épicé, poivron" },
+  { category: "Les Sentimentales", name: "Raclette",     ingredients: "Crème fraîche légère, mozzarella, pommes de terre, raclette, chorizo" },
+  // ── Les Magistrales ──
+  { category: "Les Magistrales", name: "Pizzarabia",   ingredients: "Sauce tomate, mozzarella, double bœuf haché, oignons rouges, olives vertes, huile d'olive, tomates séchées, épices" },
+  { category: "Les Magistrales", name: "Pizza Amour",  ingredients: "Sauce tomate, mozzarella, bacon, bœuf haché, poulet crousty, crème fraîche, emmental, origan" },
+  { category: "Les Magistrales", name: "Le Thaï",      ingredients: "Crème fraîche légère, mozzarella, sauce thaïlandaise épicée, bœuf haché, poulet croustillant, tomates séchées, olives noires" },
+  { category: "Les Magistrales", name: "Saint-Jacques", ingredients: "Crème fraîche légère, mozzarella, ciboulette, noix de saint-jacques, jus de citron" },
+  { category: "Les Magistrales", name: "Cannibale",    ingredients: "Sauce barbecue, mozzarella, bœuf épicé, merguez, poulet tikka" },
+  { category: "Les Magistrales", name: "Hawaienne",    ingredients: "Crème fraîche légère, mozzarella, double jambon, ananas, œuf" },
+  { category: "Les Magistrales", name: "Nordica",      ingredients: "Crème fraîche légère, mozzarella, olives noires, jus de citron, double saumon, ciboulette" },
+  { category: "Les Magistrales", name: "Fromagère",    ingredients: "Crème fraîche légère, mozzarella, sauce barbecue, jambon, gorgonzola, parmesan, emmental" },
+  { category: "Les Magistrales", name: "Extra Amour",  ingredients: "Sauce tomate, jambon, double mozzarella, pepperoni, lardons, poivrons, champignons, bœuf épicé, olives noires" },
+  { category: "Les Magistrales", name: "La Grecque",   ingredients: "Crème fraîche légère, mozzarella, sauce barbecue, bœuf haché, tomate, merguez, feta" },
+  { category: "Les Magistrales", name: "Indienne",     ingredients: "Crème fraîche légère, poulet tikka, chèvre, emmental, oignons rouges, miel, épices indiennes" },
+  { category: "Les Magistrales", name: "Cordon Bleu",  ingredients: "Crème fraîche, cordon bleu, jambon, pommes de terre, oignons, filet de sauce barbecue" },
+  { category: "Les Magistrales", name: "Tacos",        ingredients: "Base fromagère, emmental, cheddar, merguez, poulet crousty, viande hachée, poivron, potatoes, épice mexicaine, filet de crème" },
+  // ── Les Originales ──
+  { category: "Les Originales", name: "Margharita",   ingredients: "Sauce tomate, emmental, mozzarella, fines herbes" },
+  { category: "Les Originales", name: "Curry Amour",  ingredients: "Crème fraîche légère, mozzarella, pommes de terre, poulet tikka, oignons rouges, poivrons, curry" },
+  { category: "Les Originales", name: "Spicy Bacon",  ingredients: "Crème fraîche, mozzarella, bacon, pommes de terre, oignons rouges, épices, poivrons, cheddar" },
+  { category: "Les Originales", name: "Rustique",     ingredients: "Crème fraîche légère, mozzarella, champignons frais, lardons, œuf, oignons rouges" },
+  { category: "Les Originales", name: "Canadienne",   ingredients: "Sauce barbecue, mozzarella, bacon, champignons, pepperoni, poivrons" },
+  { category: "Les Originales", name: "Végétarienne", ingredients: "Sauce tomate, mozzarella, oignons rouges, poivrons, pommes de terre, champignons frais, tomates fraîches, olives noires" },
+  { category: "Les Originales", name: "Reine",        ingredients: "Sauce tomate, double mozzarella, champignons frais, double jambon" },
+  { category: "Les Originales", name: "Fruits de mer", ingredients: "Crème fraîche légère, mozzarella, ciboulette, jus de citron, cocktail de fruits de mer" },
+  { category: "Les Originales", name: "Tex-Mex",      ingredients: "Crème fraîche légère, mozzarella, bœuf épices mexicaine, oignons rouges, poivrons, pommes de terre" },
+  { category: "Les Originales", name: "Santa Fé",     ingredients: "Sauce tomate, mozzarella, double merguez, chorizo, olives noires" },
+  { category: "Les Originales", name: "Kentucky",     ingredients: "Sauce tomate, mozzarella, champignons frais, poulet tikka, oignons rouges, olives noires, filet de crème" },
 ];
 
 function useReel(spinning: boolean, finalSymbol: string, delay: number) {
@@ -298,28 +325,36 @@ export default function ConcoursPage() {
               </p>
             </div>
 
-            <div className="space-y-2 max-h-72 overflow-y-auto pr-1"
+            <div className="space-y-1 max-h-72 overflow-y-auto pr-1"
               style={{ scrollbarWidth: "none" }}>
-              {PIZZAS_SENTIMENTALES.map((pizza) => (
-                <button key={pizza.name} onClick={() => setSelectedPizza(pizza.name)}
-                  className="w-full text-left rounded-2xl px-4 py-3 transition-all"
-                  style={{
-                    background: selectedPizza === pizza.name ? "rgba(255,215,0,0.18)" : "rgba(255,255,255,0.05)",
-                    border: selectedPizza === pizza.name ? "2px solid #ffd700" : "2px solid rgba(255,255,255,0.08)",
-                    boxShadow: selectedPizza === pizza.name ? "0 0 15px rgba(255,215,0,0.2)" : "none",
-                  }}>
-                  <div className="flex items-center gap-2">
-                    <span className="text-lg shrink-0">
-                      {selectedPizza === pizza.name ? "✅" : "🍕"}
-                    </span>
-                    <div className="min-w-0">
-                      <p className="font-bold text-sm text-white leading-tight">{pizza.name}</p>
-                      <p className="text-xs leading-relaxed truncate" style={{ color: "rgba(255,255,255,0.45)" }}>
-                        {pizza.ingredients}
-                      </p>
-                    </div>
-                  </div>
-                </button>
+              {["Les Sentimentales", "Les Magistrales", "Les Originales"].map((cat) => (
+                <div key={cat}>
+                  <p className="text-xs font-black uppercase tracking-widest px-1 py-2"
+                    style={{ color: cat === "Les Sentimentales" ? "#ff6b35" : cat === "Les Magistrales" ? "#c084fc" : "#34d399" }}>
+                    {cat}
+                  </p>
+                  {TOUTES_LES_PIZZAS.filter((p) => p.category === cat).map((pizza) => (
+                    <button key={pizza.name} onClick={() => setSelectedPizza(pizza.name)}
+                      className="w-full text-left rounded-2xl px-4 py-3 mb-1.5 transition-all"
+                      style={{
+                        background: selectedPizza === pizza.name ? "rgba(255,215,0,0.18)" : "rgba(255,255,255,0.05)",
+                        border: selectedPizza === pizza.name ? "2px solid #ffd700" : "2px solid rgba(255,255,255,0.07)",
+                        boxShadow: selectedPizza === pizza.name ? "0 0 15px rgba(255,215,0,0.2)" : "none",
+                      }}>
+                      <div className="flex items-center gap-2">
+                        <span className="text-base shrink-0">
+                          {selectedPizza === pizza.name ? "✅" : "🍕"}
+                        </span>
+                        <div className="min-w-0">
+                          <p className="font-bold text-sm text-white leading-tight">{pizza.name}</p>
+                          <p className="text-xs leading-relaxed" style={{ color: "rgba(255,255,255,0.4)" }}>
+                            {pizza.ingredients}
+                          </p>
+                        </div>
+                      </div>
+                    </button>
+                  ))}
+                </div>
               ))}
             </div>
 
