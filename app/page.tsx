@@ -1,6 +1,10 @@
 "use client";
 
 import { useState, useEffect, useRef } from "react";
+import { decodeResult } from "@/app/lib/codec";
+
+type R = { w: boolean; i: number; l: number }
+type RS = { s: number }
 
 const REEL_SYMBOLS = ["🍕", "🧀", "🍅", "🫒", "🧅", "🌶️", "🥓"];
 const WIN_SYMBOL = "🍕";
@@ -134,17 +138,19 @@ export default function ConcoursPage() {
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({ name: name.trim() }),
       });
-      const data = await res.json();
+      const raw = await res.json();
       if (res.status === 409) {
-        setError(data.error ?? "Tu as déjà participé au concours !");
+        setError("Tu as déjà participé au concours !");
         return;
       }
       if (!res.ok) throw new Error();
 
-      setWinnersLeft(9 - data.winnersCount);
-      setParticipantId(data.id);
+      const data = decodeResult<R>(raw.d);
 
-      if (data.won) {
+      setWinnersLeft(data.l);
+      setParticipantId(data.i);
+
+      if (data.w) {
         setFinals([WIN_SYMBOL, WIN_SYMBOL, WIN_SYMBOL]);
       } else {
         setFinals([
@@ -158,7 +164,7 @@ export default function ConcoursPage() {
       setIsSpinning(true);
       setTimeout(() => {
         setIsSpinning(false);
-        setTimeout(() => setStep(data.won ? "won" : "lost"), 400);
+        setTimeout(() => setStep(data.w ? "won" : "lost"), 400);
       }, 1700);
     } catch {
       setError("Une erreur s'est produite, réessaie !");
@@ -174,7 +180,7 @@ export default function ConcoursPage() {
       await fetch("/api/concours", {
         method: "PATCH",
         headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ id: participantId, pizzaChoice: selectedPizza }),
+        body: JSON.stringify({ t: participantId, c: selectedPizza }),
       });
       setStep("confirmed");
     } catch {
