@@ -100,6 +100,7 @@ export default function ConcoursPage() {
   const [participantId, setParticipantId] = useState<number | null>(null);
   const [selectedPizza, setSelectedPizza] = useState<string | null>(null);
   const [saving, setSaving] = useState(false);
+  const [showIntro, setShowIntro] = useState(true);
 
   const r1 = useReel(isSpinning, finals[0], 900);
   const r2 = useReel(isSpinning, finals[1], 1300);
@@ -200,6 +201,78 @@ export default function ConcoursPage() {
       className="min-h-screen relative overflow-x-hidden flex flex-col items-center justify-center px-4 py-8 gap-4"
       style={{ background: "linear-gradient(160deg, #1a0a00 0%, #2d1200 45%, #1a0a00 100%)" }}
     >
+      {/* ── POPUP INTRO ── */}
+      {showIntro && (
+        <div
+          className="fixed inset-0 z-50 flex items-end sm:items-center justify-center p-4"
+          style={{ background: "rgba(0,0,0,0.85)", backdropFilter: "blur(8px)" }}
+        >
+          <div
+            className="w-full max-w-sm rounded-3xl p-6 space-y-5"
+            style={{
+              background: "linear-gradient(160deg, #2d1200, #1a0a00)",
+              border: "1px solid rgba(255,107,53,0.35)",
+              boxShadow: "0 0 80px rgba(255,107,53,0.2), inset 0 1px 0 rgba(255,255,255,0.08)",
+              animation: "slideUp 0.4s ease-out",
+            }}
+          >
+            {/* Titre */}
+            <div className="text-center space-y-1">
+              <div className="text-5xl" style={{ animation: "float 3s ease-in-out infinite" }}>🍕</div>
+              <h2 className="text-2xl font-black text-white mt-2">Concours Pizza !</h2>
+              <p className="text-xs uppercase tracking-widest font-bold" style={{ color: "#ff6b35" }}>
+                Offert par Imran
+              </p>
+            </div>
+
+            {/* Message principal */}
+            <div
+              className="rounded-2xl px-4 py-4 space-y-3 text-sm leading-relaxed"
+              style={{ background: "rgba(255,107,53,0.1)", border: "1px solid rgba(255,107,53,0.2)" }}
+            >
+              <p style={{ color: "rgba(255,255,255,0.9)" }}>
+                🎁 <strong style={{ color: "#ffd700" }}>Imran vous offre des pizzas</strong> pour le repas de classe de <strong style={{ color: "#ff6b35" }}>jeudi</strong> !
+              </p>
+              <p style={{ color: "rgba(255,255,255,0.75)" }}>
+                🏆 <strong>9 gagnants</strong> remportent une pizza au choix chez <strong style={{ color: "#ff6b35" }}>Amour de Pizza</strong>. Les heureux élus n&apos;ont <strong style={{ color: "#ffd700" }}>pas besoin de ramener de nourriture</strong> jeudi — leur pizza est prise en charge !
+              </p>
+            </div>
+
+            {/* Règle du jeu */}
+            <div className="space-y-2">
+              <p className="text-xs font-bold uppercase tracking-widest text-center" style={{ color: "rgba(255,255,255,0.4)" }}>
+                Comment jouer
+              </p>
+              <div className="grid grid-cols-3 gap-2 text-center">
+                {[
+                  { icon: "✍️", label: "Entre ton prénom" },
+                  { icon: "🎰", label: "Lance les rouleaux" },
+                  { icon: "🍕", label: "Aligne 3 pizzas" },
+                ].map((s) => (
+                  <div key={s.label} className="rounded-xl py-3 px-1 space-y-1"
+                    style={{ background: "rgba(255,255,255,0.05)", border: "1px solid rgba(255,255,255,0.07)" }}>
+                    <div className="text-xl">{s.icon}</div>
+                    <p className="text-xs font-medium" style={{ color: "rgba(255,255,255,0.55)" }}>{s.label}</p>
+                  </div>
+                ))}
+              </div>
+            </div>
+
+            <button
+              onClick={() => setShowIntro(false)}
+              className="w-full py-4 rounded-2xl font-black text-lg transition-all active:scale-95"
+              style={{
+                background: "linear-gradient(135deg, #ff6b35, #ff1744)",
+                color: "#fff",
+                boxShadow: "0 8px 30px rgba(255,107,53,0.45)",
+              }}
+            >
+              🎰 Tenter ma chance !
+            </button>
+          </div>
+        </div>
+      )}
+
       {/* Modale zoom image */}
       {zoomedImg && (
         <div
