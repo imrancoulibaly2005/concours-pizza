@@ -3,8 +3,8 @@
 import { useState, useEffect, useRef } from "react";
 import { decodeResult } from "@/app/lib/codec";
 
-type R = { w: boolean; i: number; l: number }
-type RS = { s: number }
+type R  = { w: boolean; i: number; l: number }
+type R409 = { s: -1; w: boolean; i?: number; c?: string | null; l?: number }
 
 const REEL_SYMBOLS = ["🍕", "🧀", "🍅", "🫒", "🧅", "🌶️", "🥓"];
 const WIN_SYMBOL = "🍕";
@@ -145,7 +145,23 @@ export default function ConcoursPage() {
       });
       const raw = await res.json();
       if (res.status === 409) {
-        setError("Tu as déjà participé au concours !");
+        const r409 = decodeResult<R409>(raw.d);
+        if (r409.w && r409.i) {
+          // Gagnant qui revient — on restaure son état
+          setParticipantId(r409.i);
+          setWinnersLeft(r409.l ?? null);
+          if (r409.c) {
+            // A déjà choisi sa pizza → confirmation
+            setSelectedPizza(r409.c);
+            setStep("confirmed");
+          } else {
+            // N'a pas encore choisi → l'envoyer au menu
+            setMenuImg(0);
+            setStep("menu");
+          }
+        } else {
+          setError("Tu as déjà participé au concours !");
+        }
         return;
       }
       if (!res.ok) throw new Error();

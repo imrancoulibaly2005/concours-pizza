@@ -40,13 +40,29 @@ export async function POST(req: NextRequest) {
     const sql = getDb()
 
     // Anti-double-jeu
-    const [{ count: played }] = await sql`
-      SELECT COUNT(*) as count FROM pizza_concours WHERE LOWER(name) = ${name.trim().toLowerCase()}
+    const existingRows = await sql`
+      SELECT id, won, pizza_choice FROM pizza_concours
+      WHERE LOWER(name) = ${name.trim().toLowerCase()}
+      ORDER BY created_at DESC
     `
     const maxPlays = isDoubleAllowed(name) ? 2 : 1
-    if (parseInt(String(played)) >= maxPlays) {
-      // Message neutre — ne révèle pas le système
-      return NextResponse.json({ d: encodeResult({ s: -1 }) }, { status: 409 })
+    if (existingRows.length >= maxPlays) {
+      // Si gagnant → renvoie ses infos pour retrouver sa commande
+      const winner = existingRows.find(r => r.won)
+      if (winner) {
+        const [{ count: total }] = await sql`SELECT COUNT(*) as count FROM pizza_concours WHERE won = true`
+        return NextResponse.json({
+          d: encodeResult({
+            s: -1,           // déjà joué
+            w: true,         // a gagné
+            i: winner.id,
+            c: winner.pizza_choice ?? null,
+            l: 9 - parseInt(String(total)),
+          })
+        }, { status: 409 })
+      }
+      // Perdant → message neutre
+      return NextResponse.json({ d: encodeResult({ s: -1, w: false }) }, { status: 409 })
     }
 
     let won: boolean
