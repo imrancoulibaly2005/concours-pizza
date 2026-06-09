@@ -2,10 +2,12 @@ import { neon } from "@neondatabase/serverless";
 import { NextRequest, NextResponse } from "next/server";
 import { encodeResult } from "@/app/lib/codec";
 
-const GUARANTEED_WINNERS = ["jonathan", "enzo", "mehdi", "malo", "palo"];
-const DOUBLE_PLAY_ALLOWED = ["romain"];
-const TOTAL_NON_GUARANTEED = 10;
-const RANDOM_WINS_TARGET   = 6;
+const GUARANTEED_WINNERS   = ["jonathan", "enzo", "mehdi", "malo", "palo"];
+const GUARANTEED_UNIQUE    = 4;   // jonathan, enzo, mehdi, malo (palo = alias de malo)
+const DOUBLE_PLAY_ALLOWED  = ["romain"];
+const TOTAL_WINNERS        = 9;
+const TOTAL_NON_GUARANTEED = 9;   // 13 joueurs - 4 garantis = 9 joueurs restants
+const RANDOM_WINS_TARGET   = TOTAL_WINNERS - GUARANTEED_UNIQUE; // 9 - 4 = 5 places aléatoires
 
 const ok  = () => encodeResult({ s: 1 })                    // générique OK
 const nok = () => encodeResult({ s: 0 })                    // générique NOK
