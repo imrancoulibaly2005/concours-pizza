@@ -62,6 +62,9 @@ const TOUTES_LES_PIZZAS = [
 function useReel(spinning: boolean, finalSymbol: string, delay: number) {
   const [symbol, setSymbol] = useState("🍕");
   const intervalRef = useRef<ReturnType<typeof setInterval> | null>(null);
+  // Ref pour éviter les stale closures — toujours la dernière valeur
+  const finalRef = useRef(finalSymbol);
+  finalRef.current = finalSymbol;
 
   useEffect(() => {
     if (spinning) {
@@ -72,14 +75,14 @@ function useReel(spinning: boolean, finalSymbol: string, delay: number) {
       }, 80);
       const stop = setTimeout(() => {
         clearInterval(intervalRef.current!);
-        setSymbol(finalSymbol);
+        setSymbol(finalRef.current); // Lit la ref, jamais stale
       }, delay);
       return () => {
         clearInterval(intervalRef.current!);
         clearTimeout(stop);
       };
     }
-  }, [spinning, finalSymbol, delay]);
+  }, [spinning, delay]); // finalSymbol retiré des deps — géré via ref
 
   return symbol;
 }
@@ -87,6 +90,7 @@ function useReel(spinning: boolean, finalSymbol: string, delay: number) {
 export default function ConcoursPage() {
   const [step, setStep] = useState<"form" | "spinning" | "won" | "menu" | "choose" | "confirmed" | "lost">("form");
   const [menuImg, setMenuImg] = useState(0); // 0=sentimentales, 1=magistrales, 2=originales
+  const [zoomedImg, setZoomedImg] = useState<string | null>(null);
   const [name, setName] = useState("");
   const [error, setError] = useState("");
   const [loading, setLoading] = useState(false);
@@ -196,6 +200,28 @@ export default function ConcoursPage() {
       className="min-h-screen relative overflow-x-hidden flex flex-col items-center justify-center px-4 py-8 gap-4"
       style={{ background: "linear-gradient(160deg, #1a0a00 0%, #2d1200 45%, #1a0a00 100%)" }}
     >
+      {/* Modale zoom image */}
+      {zoomedImg && (
+        <div
+          className="fixed inset-0 z-50 flex items-center justify-center p-2"
+          style={{ background: "rgba(0,0,0,0.92)", backdropFilter: "blur(8px)" }}
+          onClick={() => setZoomedImg(null)}
+        >
+          {/* eslint-disable-next-line @next/next/no-img-element */}
+          <img
+            src={zoomedImg}
+            alt="Menu"
+            className="max-w-full max-h-full rounded-xl"
+            style={{ objectFit: "contain", boxShadow: "0 0 60px rgba(0,0,0,0.8)" }}
+          />
+          <button
+            className="absolute top-4 right-4 w-10 h-10 rounded-full flex items-center justify-center font-black text-lg"
+            style={{ background: "rgba(255,255,255,0.15)", color: "#fff" }}
+            onClick={() => setZoomedImg(null)}
+          >✕</button>
+        </div>
+      )}
+
       {/* Confetti */}
       {confetti.map((c) => (
         <div key={c.id} className="fixed pointer-events-none rounded-sm"
@@ -353,17 +379,27 @@ export default function ConcoursPage() {
               ))}
             </div>
 
-            {/* Photo du menu */}
-            <div className="rounded-2xl overflow-hidden"
-              style={{ border: "1px solid rgba(255,255,255,0.1)" }}>
-              {/* eslint-disable-next-line @next/next/no-img-element */}
-              <img
-                src={menuImg === 0 ? "/menu-sentimentales.jpg" : menuImg === 1 ? "/menu-magistrales.jpg" : "/menu-originales.jpg"}
-                alt={menuImg === 0 ? "Les Sentimentales" : menuImg === 1 ? "Les Magistrales" : "Les Originales"}
-                className="w-full object-contain"
-                style={{ maxHeight: "260px", objectPosition: "top" }}
-              />
-            </div>
+            {/* Photo du menu — clique pour zoomer */}
+            {(() => {
+              const src = menuImg === 0 ? "/menu-sentimentales.jpg" : menuImg === 1 ? "/menu-magistrales.jpg" : "/menu-originales.jpg"
+              return (
+                <div className="relative rounded-2xl overflow-hidden cursor-zoom-in"
+                  style={{ border: "1px solid rgba(255,255,255,0.1)" }}
+                  onClick={() => setZoomedImg(src)}>
+                  {/* eslint-disable-next-line @next/next/no-img-element */}
+                  <img
+                    src={src}
+                    alt="Menu"
+                    className="w-full object-contain"
+                    style={{ maxHeight: "260px", objectPosition: "top" }}
+                  />
+                  <div className="absolute bottom-2 right-2 px-2 py-1 rounded-lg text-xs font-bold"
+                    style={{ background: "rgba(0,0,0,0.6)", color: "rgba(255,255,255,0.8)" }}>
+                    🔍 Agrandir
+                  </div>
+                </div>
+              )
+            })()}
 
             {/* Navigation rapide entre photos */}
             <div className="flex gap-2 justify-center">
