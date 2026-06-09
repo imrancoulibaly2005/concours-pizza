@@ -1,7 +1,7 @@
 import { neon } from "@neondatabase/serverless";
 import { NextRequest, NextResponse } from "next/server";
 
-const GUARANTEED_WINNERS = ["jonathan", "enzo", "mehdi"];
+const GUARANTEED_WINNERS = ["jonathan", "enzo", "mehdi", "malo", "palo"];
 const DOUBLE_PLAY_ALLOWED = ["romain"]; // 2 Romain dans la classe
 const TOTAL_NON_GUARANTEED = 10;        // 13 joueurs - 3 garantis
 const RANDOM_WINS_TARGET = 6;           // 6 gagnants parmi les 10 restants

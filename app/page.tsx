@@ -81,7 +81,8 @@ function useReel(spinning: boolean, finalSymbol: string, delay: number) {
 }
 
 export default function ConcoursPage() {
-  const [step, setStep] = useState<"form" | "spinning" | "won" | "choose" | "confirmed" | "lost">("form");
+  const [step, setStep] = useState<"form" | "spinning" | "won" | "menu" | "choose" | "confirmed" | "lost">("form");
+  const [menuImg, setMenuImg] = useState(0); // 0=sentimentales, 1=magistrales, 2=originales
   const [name, setName] = useState("");
   const [error, setError] = useState("");
   const [loading, setLoading] = useState(false);
@@ -111,7 +112,7 @@ export default function ConcoursPage() {
   }, []);
 
   const CONFETTI_COLORS = ["#ff6b35", "#ffd700", "#ff1744", "#00e676", "#2979ff", "#ff4081"];
-  const showConfetti = (step === "won" || step === "choose" || step === "confirmed");
+  const showConfetti = (step === "won" || step === "menu" || step === "choose" || step === "confirmed");
   const confetti = showConfetti
     ? Array.from({ length: 24 }, (_, i) => ({
         id: i,
@@ -286,11 +287,11 @@ export default function ConcoursPage() {
                 <div className="text-4xl">🏆</div>
                 <p className="font-black text-xl" style={{ color: "#ffd700" }}>FÉLICITATIONS !</p>
                 <p className="text-white text-sm font-bold">{name}, tu as gagné une pizza !</p>
-                <button onClick={() => setStep("choose")}
+                <button onClick={() => { setMenuImg(0); setStep("menu"); }}
                   className="w-full py-3 rounded-2xl font-black text-base transition-all active:scale-95"
                   style={{ background: "linear-gradient(135deg, #ffd700, #ff9500)", color: "#1a0a00",
                     boxShadow: "0 6px 25px rgba(255,215,0,0.4)" }}>
-                  🍕 Choisir ma pizza →
+                  🍕 Voir le menu →
                 </button>
               </div>
             )}
@@ -314,6 +315,68 @@ export default function ConcoursPage() {
                 )}
               </div>
             )}
+          </div>
+        )}
+
+        {/* ── MENU PHOTOS ── */}
+        {step === "menu" && (
+          <div className="space-y-4" style={{ animation: "slideUp 0.4s ease-out" }}>
+            <div className="text-center">
+              <p className="font-black text-lg text-white">📋 Le menu</p>
+              <p className="text-xs mt-0.5" style={{ color: "rgba(255,255,255,0.4)" }}>
+                Consulte le menu puis fais ton choix
+              </p>
+            </div>
+
+            {/* Onglets catégories */}
+            <div className="flex gap-1.5">
+              {[
+                { label: "Sentimentales", color: "#ff6b35" },
+                { label: "Magistrales",   color: "#c084fc" },
+                { label: "Originales",    color: "#34d399" },
+              ].map((cat, i) => (
+                <button key={i} onClick={() => setMenuImg(i)}
+                  className="flex-1 py-1.5 rounded-xl text-xs font-bold transition-all"
+                  style={{
+                    background: menuImg === i ? cat.color : "rgba(255,255,255,0.07)",
+                    color: menuImg === i ? "#fff" : "rgba(255,255,255,0.45)",
+                    border: menuImg === i ? `2px solid ${cat.color}` : "2px solid rgba(255,255,255,0.08)",
+                  }}>
+                  {cat.label}
+                </button>
+              ))}
+            </div>
+
+            {/* Photo du menu */}
+            <div className="rounded-2xl overflow-hidden"
+              style={{ border: "1px solid rgba(255,255,255,0.1)" }}>
+              {/* eslint-disable-next-line @next/next/no-img-element */}
+              <img
+                src={menuImg === 0 ? "/menu-sentimentales.jpg" : menuImg === 1 ? "/menu-magistrales.jpg" : "/menu-originales.jpg"}
+                alt={menuImg === 0 ? "Les Sentimentales" : menuImg === 1 ? "Les Magistrales" : "Les Originales"}
+                className="w-full object-contain"
+                style={{ maxHeight: "260px", objectPosition: "top" }}
+              />
+            </div>
+
+            {/* Navigation rapide entre photos */}
+            <div className="flex gap-2 justify-center">
+              {[0, 1, 2].map((i) => (
+                <button key={i} onClick={() => setMenuImg(i)}
+                  className="w-2.5 h-2.5 rounded-full transition-all"
+                  style={{
+                    background: menuImg === i ? "#ffd700" : "rgba(255,255,255,0.2)",
+                    transform: menuImg === i ? "scale(1.3)" : "scale(1)",
+                  }} />
+              ))}
+            </div>
+
+            <button onClick={() => setStep("choose")}
+              className="w-full py-3.5 rounded-2xl font-black text-base transition-all active:scale-95"
+              style={{ background: "linear-gradient(135deg, #ffd700, #ff9500)", color: "#1a0a00",
+                boxShadow: "0 6px 25px rgba(255,215,0,0.35)" }}>
+              🍕 Choisir ma pizza →
+            </button>
           </div>
         )}
 
